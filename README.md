@@ -56,26 +56,8 @@ dokku config:set --no-restart sentry SENTRY_EMAIL_HOST=smtp.example.com
 dokku config:set --no-restart sentry SENTRY_EMAIL_USERNAME=<yourusername>
 dokku config:set --no-restart sentry SENTRY_EMAIL_PASSWORD=<yourmailpassword>
 dokku config:set --no-restart sentry SENTRY_EMAIL_PORT=25
+dokku config:set --no-restart sentry SENTRY_SERVER_EMAIL=sentry@example.com
 dokku config:set --no-restart sentry SENTRY_EMAIL_USE_TLS=True
-```
-
-## Domain and SSL certificate
-
-Now we set up a domain name and grab a SSL certificate with Let's Encrypt.
-
-```
-dokku domains:set sentry sentry.example.com
-
-dokku config:set --no-restart sentry DOKKU_LETSENCRYPT_EMAIL=you@example.com
-dokku config:set --no-restart sentry SENTRY_USE_SSL=True
-dokku letsencrypt sentry
-```
-
-The Dockerfile will listen on port `9000` for web requests. We need to forward
-it using Dokku.
-
-```
-dokku proxy:ports-add sentry http:80:9000
 ```
 
 ## Persistent storage
@@ -84,27 +66,67 @@ To persists user uploads (e.g. avatars) between restarts, we create a folder on
 the host machine and tell Dokku to mount it to the app container.
 
 ```
-mkdir -p /var/dokku/sentry/data
-chown dokku:dokku /var/dokku/sentry/data
+sudo mkdir -p /var/dokku/sentry/data
+sudo chown dokku:dokku /var/dokku/sentry/data
 dokku storage:mount sentry /var/dokku/sentry/data:/var/lib/sentry/file
 ```
 
-# Push Sentry to Dokku
+## Push Sentry to Dokku
 
 First clone this repository onto your machine.
 
 ## Via SSH
 
-```git clone git@github.com:mimischi/dokku-sentry.git```
+```
+git clone git@github.com:mimischi/dokku-sentry.git
+```
 
 ## Via HTTPS
 
-```git clone https://github.com/mimischi/dokku-sentry.git```
+```
+git clone https://github.com/mimischi/dokku-sentry.git
+```
 
 Now you need to set up your Dokku server as a remote.
 
-```git remote add dokku dokku@example.com:sentry```
+```
+git remote add dokku dokku@example.com:sentry
+```
 
 Finally, we can push Sentry to Dokku.
 
-```git push dokku master```
+```
+git push dokku master
+```
+
+To get the routing working, we need to apply a few other settings.
+
+## Domain and SSL certificate
+
+Now we set up a domain name.
+
+```
+dokku domains:set sentry sentry.example.com
+```
+
+The Dockerfile will listen on port `9000` for web requests. We need to forward
+it using Dokku, which by default will try and forward port `5000`.
+
+```
+dokku proxy:ports-remove sentry http:80:5000
+dokku proxy:ports-remove sentry http:9000:9000
+```
+
+If `dokku proxy:report sentry` still reports any ports under the environmental variable `DOKKU_PROXY_PORT_MAP`, remove them. Next add the correct port forward.
+
+```
+dokku proxy:ports-add sentry http:80:9000
+```
+
+Last but not least, we can go an grab the SSL certificate from Let's Encrypt.
+
+```
+dokku config:set --no-restart sentry DOKKU_LETSENCRYPT_EMAIL=you@example.com
+dokku config:set --no-restart sentry SENTRY_USE_SSL=True
+dokku letsencrypt sentry
+```
