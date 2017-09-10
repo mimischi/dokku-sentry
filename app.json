@@ -11,7 +11,7 @@
 	"env": {},
 	"scripts": {
 		"dokku": {
-			"predeploy": "sentry --config=sentry.conf.py upgrade --noinput"
+			"postdeploy": "sentry --config=sentry.conf.py upgrade --noinput"
     }
   }
 }
