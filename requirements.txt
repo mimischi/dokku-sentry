@@ -1,1 +1,4 @@
-# Add plugins here
+uWSGI==2.0.15
+
+sentry-plugins
+
