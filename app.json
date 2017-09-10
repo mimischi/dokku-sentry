@@ -12,4 +12,6 @@
 	"scripts": {
 		"dokku": {
 			"predeploy": "sentry --config=sentry.conf.py upgrade --noinput"
+    }
+  }
 }
