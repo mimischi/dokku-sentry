@@ -75,17 +75,19 @@ dokku storage:mount sentry /var/dokku/sentry/data:/var/lib/sentry/file
 
 First clone this repository onto your machine.
 
-## Via SSH
+### Via SSH
 
 ```
 git clone git@github.com:mimischi/dokku-sentry.git
 ```
 
-## Via HTTPS
+### Via HTTPS
 
 ```
 git clone https://github.com/mimischi/dokku-sentry.git
 ```
+
+### Set up git remote
 
 Now you need to set up your Dokku server as a remote.
 
@@ -93,17 +95,19 @@ Now you need to set up your Dokku server as a remote.
 git remote add dokku dokku@example.com:sentry
 ```
 
+### Push Sentry
+
 Finally, we can push Sentry to Dokku.
 
 ```
 git push dokku master
 ```
 
-To get the routing working, we need to apply a few other settings.
 
 ## Domain and SSL certificate
 
-Now we set up a domain name.
+To get the routing working, we need to apply a few other settings. First we set
+the domain.
 
 ```
 dokku domains:set sentry sentry.example.com
@@ -117,13 +121,16 @@ dokku proxy:ports-remove sentry http:80:5000
 dokku proxy:ports-remove sentry http:9000:9000
 ```
 
-If `dokku proxy:report sentry` still reports any ports under the environmental variable `DOKKU_PROXY_PORT_MAP`, remove them. Next add the correct port forward.
+If `dokku proxy:report sentry` reports that the environment variable
+`DOKKU_PROXY_PORT_MAP` is not empty, remove the forwards. Next add the correct
+port forward.
 
 ```
 dokku proxy:ports-add sentry http:80:9000
 ```
 
-Last but not least, we can go an grab the SSL certificate from Let's Encrypt.
+Last but not least, we can go an grab the SSL certificate from [Let's
+Encrypt](https://letsencrypt.org/).
 
 ```
 dokku config:set --no-restart sentry DOKKU_LETSENCRYPT_EMAIL=you@example.com
