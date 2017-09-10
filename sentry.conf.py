@@ -27,49 +27,23 @@
 #  SENTRY_ENABLE_EMAIL_REPLIES
 #  SENTRY_SMTP_HOSTNAME
 #  SENTRY_MAILGUN_API_KEY
-#  SENTRY_SINGLE_ORGANIZATION
-#  SENTRY_SECRET_KEY
+
 #  GITHUB_APP_ID
 #  GITHUB_API_SECRET
-#  BITBUCKET_CONSUMER_KEY
-#  BITBUCKET_CONSUMER_SECRET
-from sentry.conf.server import *  # NOQA
-
 import os
+#  SENTRY_SINGLE_ORGANIZATION
+#  SENTRY_SECRET_KEY
 import os.path
 
+import environ
+from sentry.conf.server import *  # NOQA
+
+# Use django-environ to easily parse environment variables
+eenv = environ.Env()
 CONF_ROOT = os.path.dirname(__file__)
 
-postgres = env('SENTRY_POSTGRES_HOST') or (env('POSTGRES_PORT_5432_TCP_ADDR') and 'postgres')
-if postgres:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'sentry.db.postgres',
-            'NAME': (
-                env('SENTRY_DB_NAME')
-                or env('POSTGRES_ENV_POSTGRES_USER')
-                or 'postgres'
-            ),
-            'USER': (
-                env('SENTRY_DB_USER')
-                or env('POSTGRES_ENV_POSTGRES_USER')
-                or 'postgres'
-            ),
-            'PASSWORD': (
-                env('SENTRY_DB_PASSWORD')
-                or env('POSTGRES_ENV_POSTGRES_PASSWORD')
-                or ''
-            ),
-            'HOST': postgres,
-            'PORT': (
-                env('SENTRY_POSTGRES_PORT')
-                or ''
-            ),
-            'OPTIONS': {
-                'autocommit': True,
-            },
-        },
-    }
+# Looks for "DATABASE_URL" in environment variables
+DATABASES = {'default': eenv.db()}
 
 # You should not change this setting after your database has been created
 # unless you have altered all schemas first
@@ -93,23 +67,21 @@ SENTRY_SINGLE_ORGANIZATION = env('SENTRY_SINGLE_ORGANIZATION', True)
 # Generic Redis configuration used as defaults for various things including:
 # Buffers, Quotas, TSDB
 
-redis = env('SENTRY_REDIS_HOST') or (env('REDIS_PORT_6379_TCP_ADDR') and 'redis')
-if not redis:
-    raise Exception('Error: REDIS_PORT_6379_TCP_ADDR (or SENTRY_REDIS_HOST) is undefined, did you forget to `--link` a redis container?')
-
-redis_password = env('SENTRY_REDIS_PASSWORD') or ''
-redis_port = env('SENTRY_REDIS_PORT') or '6379'
-redis_db = env('SENTRY_REDIS_DB') or '0'
+REDIS_URL = eenv.url('REDIS_URL')
+REDIS_HOSTNAME = REDIS_URL.hostname
+REDIS_PASSWORD = REDIS_URL.password
+REDIS_PORT = REDIS_URL.port
+REDIS_DB = REDIS_URL.path[1:] or '0'
 
 SENTRY_OPTIONS.update({
     'redis.clusters': {
         'default': {
             'hosts': {
                 0: {
-                    'host': redis,
-                    'password': redis_password,
-                    'port': redis_port,
-                    'db': redis_db,
+                    'host': REDIS_HOSTNAME,
+                    'password': REDIS_PASSWORD,
+                    'port': REDIS_PORT,
+                    'db': REDIS_DB,
                 },
             },
         },
@@ -123,17 +95,18 @@ SENTRY_OPTIONS.update({
 # Sentry currently utilizes two separate mechanisms. While CACHES is not a
 # requirement, it will optimize several high throughput patterns.
 
-memcached = env('SENTRY_MEMCACHED_HOST') or (env('MEMCACHED_PORT_11211_TCP_ADDR') and 'memcached')
-if memcached:
-    memcached_port = (
-        env('SENTRY_MEMCACHED_PORT')
-        or '11211'
-    )
+MEMCACHED_URL = eenv.url('MEMCACHED_URL', None)
+if MEMCACHED_URL:
+    MEMCACHED_HOST = MEMCACHED_URL.hostname
+    MEMCACHED_PORT = MEMCACHED_URL.port
     CACHES = {
         'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-            'LOCATION': [memcached + ':' + memcached_port],
-            'TIMEOUT': 3600,
+            'BACKEND':
+            'django.core.cache.backends.memcached.MemcachedCache',
+            'LOCATION':
+            '{host}:{port}'.format(host=MEMCACHED_HOST, port=MEMCACHED_PORT),
+            'TIMEOUT':
+            3600,
         }
     }
 
@@ -148,27 +121,12 @@ SENTRY_CACHE = 'sentry.cache.redis.RedisCache'
 # information on configuring your queue broker and workers. Sentry relies
 # on a Python framework called Celery to manage queues.
 
-rabbitmq = env('SENTRY_RABBITMQ_HOST') or (env('RABBITMQ_PORT_5672_TCP_ADDR') and 'rabbitmq')
+RABBITMQ_URL = eenv.url('RABBITMQ_URL', None)
 
-if rabbitmq:
-    BROKER_URL = (
-        'amqp://' + (
-            env('SENTRY_RABBITMQ_USERNAME')
-            or env('RABBITMQ_ENV_RABBITMQ_DEFAULT_USER')
-            or 'guest'
-        ) + ':' + (
-            env('SENTRY_RABBITMQ_PASSWORD')
-            or env('RABBITMQ_ENV_RABBITMQ_DEFAULT_PASS')
-            or 'guest'
-        ) + '@' + rabbitmq + '/' + (
-            env('SENTRY_RABBITMQ_VHOST')
-            or env('RABBITMQ_ENV_RABBITMQ_DEFAULT_VHOST')
-            or '/'
-        )
-    )
+if RABBITMQ_URL:
+    BROKER_URL = (RABBITMQ_URL.geturl())
 else:
-    BROKER_URL = 'redis://:' + redis_password + '@' + redis + ':' + redis_port + '/' + redis_db
-
+    BROKER_URL = (REDIS_URL.geturl())
 
 ###############
 # Rate Limits #
@@ -251,7 +209,6 @@ SENTRY_WEB_OPTIONS = {
 # Mail Server #
 ###############
 
-
 email = env('SENTRY_EMAIL_HOST') or (env('SMTP_PORT_25_TCP_ADDR') and 'smtp')
 if email:
     SENTRY_OPTIONS['mail.backend'] = 'smtp'
@@ -274,7 +231,8 @@ SENTRY_OPTIONS['mail.mailgun-api-key'] = env('SENTRY_MAILGUN_API_KEY') or ''
 if SENTRY_OPTIONS['mail.mailgun-api-key']:
     SENTRY_OPTIONS['mail.enable-replies'] = True
 else:
-    SENTRY_OPTIONS['mail.enable-replies'] = env('SENTRY_ENABLE_EMAIL_REPLIES', False)
+    SENTRY_OPTIONS['mail.enable-replies'] = env('SENTRY_ENABLE_EMAIL_REPLIES',
+                                                False)
 
 if SENTRY_OPTIONS['mail.enable-replies']:
     SENTRY_OPTIONS['mail.reply-hostname'] = env('SENTRY_SMTP_HOSTNAME') or ''
@@ -284,7 +242,9 @@ if SENTRY_OPTIONS['mail.enable-replies']:
 # being invalidated.
 secret_key = env('SENTRY_SECRET_KEY')
 if not secret_key:
-    raise Exception('Error: SENTRY_SECRET_KEY is undefined, run `generate-secret-key` and set to -e SENTRY_SECRET_KEY')
+    raise Exception(
+        'Error: SENTRY_SECRET_KEY is undefined, run `generate-secret-key` and set to -e SENTRY_SECRET_KEY'
+    )
 
 if 'SENTRY_RUNNING_UWSGI' not in os.environ and len(secret_key) < 32:
     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
