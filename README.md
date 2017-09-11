@@ -1,4 +1,8 @@
-# Sentry on Dokku
+![Project logo](.github/header.png)
+
+![Sentry version](https://img.shields.io/badge/Sentry-8.19-blue.svg) ![Dokku version](https://img.shields.io/badge/Dokku-v0.10.4-blue.svg)
+
+# Run Sentry on Dokku
 
 Deploy your own instance of [Sentry](https://sentry.io) onto
 [Dokku](https://github.com/dokku/dokku)!
