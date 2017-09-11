@@ -1,10 +1,17 @@
 # Sentry on Dokku
 
-This project is a clone of the official bootstrap repository ([getsentry/onpremise](https://github.com/getsentry/onpremise)) for running your own [Sentry](https://sentry.io/) with [Dokku](http://dokku.viewdocs.io/dokku/).
+Deploy your own instance of [Sentry](https://sentry.io) onto
+[Dokku](https://github.com/dokku/dokku)!
 
-## Current version
+This project is a clone of the official bootstrap repository
+([getsentry/onpremise](https://github.com/getsentry/onpremise)) with a few
+modifications for a seamless deploy to Dokku.
 
-The current version of the repository will run [Sentry 8.19](https://github.com/getsentry/sentry/releases/tag/8.19.0).
+## What you get
+
+This repository will deploy [Sentry
+8.19](https://github.com/getsentry/sentry/releases/tag/8.19.0). It has been
+tested with Dokku 0.10+.
 
 ## Requirements
 
@@ -14,8 +21,9 @@ The current version of the repository will run [Sentry 8.19](https://github.com/
  * [dokku-memcached](https://github.com/dokku/dokku-memcached)
  * [dokku-letsencrypt](https://github.com/dokku/dokku-letsencrypt)
 
-
 # Setup
+
+This will guide you through the set up of your Sentry instance.
 
 ## App and databases
 
@@ -49,7 +57,7 @@ dokku config:set --no-restart sentry SENTRY_SECRET_KEY=$(echo `openssl rand -bas
 ### Email settings
 
 If you want to receive emails from sentry (notifications, activation mails), you
-need to set the settings accordingly.
+need to set the following settings accordingly.
 
 ```
 dokku config:set --no-restart sentry SENTRY_EMAIL_HOST=smtp.example.com
@@ -73,15 +81,17 @@ dokku storage:mount sentry /var/dokku/sentry/data:/var/lib/sentry/file
 
 ## Push Sentry to Dokku
 
+### Grabbing the repository
+
 First clone this repository onto your machine.
 
-### Via SSH
+#### Via SSH
 
 ```
 git clone git@github.com:mimischi/dokku-sentry.git
 ```
 
-### Via HTTPS
+#### Via HTTPS
 
 ```
 git clone https://github.com/mimischi/dokku-sentry.git
@@ -97,12 +107,11 @@ git remote add dokku dokku@example.com:sentry
 
 ### Push Sentry
 
-Finally, we can push Sentry to Dokku.
+Finally, we can push Sentry to Dokku (_before_ moving on to the [last part](#domain-and-ssl-certificate)).
 
 ```
 git push dokku master
 ```
-
 
 ## Domain and SSL certificate
 
@@ -113,17 +122,20 @@ the domain.
 dokku domains:set sentry sentry.example.com
 ```
 
-The Dockerfile will listen on port `9000` for web requests. We need to forward
-it using Dokku, which by default will try and forward port `5000`.
+The parent Sentry Dockerfile exposes port `9000` for web requests. Dokku will
+set up this port for outside communication, as explained in [its
+documentation](http://dokku.viewdocs.io/dokku/advanced-usage/proxy-management/#proxy-port-mapping).
+Because we want Sentry to be available on the default port `80` (or `443` for
+SSL), we need to fiddle around with the proxy settings.
+
+First remove the proxy mapping added by Dokku.
 
 ```
-dokku proxy:ports-remove sentry http:80:5000
 dokku proxy:ports-remove sentry http:9000:9000
 ```
 
-If `dokku proxy:report sentry` reports that the environment variable
-`DOKKU_PROXY_PORT_MAP` is not empty, remove the forwards. Next add the correct
-port forward.
+If `dokku proxy:report sentry` shows that `DOKKU_PROXY_PORT_MAP` is not empty,
+remove all port mappings. Next add the correct port mapping.
 
 ```
 dokku proxy:ports-add sentry http:80:9000
