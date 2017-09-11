@@ -107,7 +107,7 @@ git remote add dokku dokku@example.com:sentry
 
 ### Push Sentry
 
-Finally, we can push Sentry to Dokku (_before_ moving on to the [last part](#domain-and-ssl-certificate)).
+Now we can push Sentry to Dokku (_before_ moving on to the [next part](#domain-and-ssl-certificate)).
 
 ```
 git push dokku master
@@ -135,7 +135,7 @@ dokku proxy:ports-remove sentry http:9000:9000
 ```
 
 If `dokku proxy:report sentry` shows that `DOKKU_PROXY_PORT_MAP` is not empty,
-remove all port mappings. Next add the correct port mapping.
+remove all remaining port mappings. Next add the correct port mapping.
 
 ```
 dokku proxy:ports-add sentry http:80:9000
@@ -149,3 +149,14 @@ dokku config:set --no-restart sentry DOKKU_LETSENCRYPT_EMAIL=you@example.com
 dokku config:set --no-restart sentry SENTRY_USE_SSL=True
 dokku letsencrypt sentry
 ```
+
+## Create a user
+
+Sentry is now up and running on [https://sentry.example.com](#). Before you're
+able to use it, you need to create a user.
+
+```
+dokku run sentry web sentry createuser
+```
+
+This will prompt you to enter an email, password and whether the user should be a superuser.
