@@ -1,6 +1,6 @@
 ![Project logo](.github/header.png)
 
-![Sentry version](https://img.shields.io/badge/Sentry-8.20-blue.svg) ![Dokku version](https://img.shields.io/badge/Dokku-v0.10.4-blue.svg)
+![Sentry version](https://img.shields.io/badge/Sentry-8.21-blue.svg) ![Dokku version](https://img.shields.io/badge/Dokku-v0.10.4-blue.svg)
 
 # Run Sentry on Dokku
 
@@ -14,7 +14,7 @@ modifications for a seamless deploy to Dokku.
 ## What you get
 
 This repository will deploy [Sentry
-8.20](https://github.com/getsentry/sentry/releases/tag/8.20.0). It has been
+8.21](https://github.com/getsentry/sentry/releases/tag/8.21.0). It has been
 tested with Dokku 0.10+.
 
 ## Requirements
