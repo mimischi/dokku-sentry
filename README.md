@@ -79,9 +79,9 @@ To persists user uploads (e.g. avatars) between restarts, we create a folder on
 the host machine and tell Dokku to mount it to the app container.
 
 ```
-sudo mkdir -p /var/dokku/sentry/data
-sudo chown dokku:dokku /var/dokku/sentry/data
-dokku storage:mount sentry /var/dokku/sentry/data:/var/lib/sentry/file
+sudo mkdir -p /var/lib/dokku/data/storage/sentry
+sudo chown 32768:32768 /var/dokku/sentry/data
+dokku storage:mount sentry /var/lib/dokku/data/storage/sentry:/var/lib/sentry/file
 ```
 
 ## Domain setup
