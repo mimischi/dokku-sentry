@@ -1,4 +1,4 @@
 FROM sentry:8.22-onbuild
 
-RUN adduser -D -u 32768 -g dokku dokku
+RUN groupadd -r dokku && useradd -r -m -u 32768 -g dokku dokku
 USER dokku
