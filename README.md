@@ -80,8 +80,8 @@ the host machine and tell Dokku to mount it to the app container.
 
 ```
 sudo mkdir -p /var/lib/dokku/data/storage/sentry
-sudo chown 32768:32768 /var/dokku/sentry/data
-dokku storage:mount sentry /var/lib/dokku/data/storage/sentry:/var/lib/sentry/file
+sudo chown 32768:32768 /var/lib/dokku/data/storage/sentry
+dokku storage:mount sentry /var/lib/dokku/data/storage/sentry:/var/lib/sentry/files
 ```
 
 ## Domain setup
