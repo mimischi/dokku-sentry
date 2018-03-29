@@ -165,7 +165,7 @@ Sentry is now up and running on your domain ([https://sentry.example.com](#)).
 Before you're able to use it, you need to create a user.
 
 ```
-dokku run sentry web sentry createuser
+dokku run sentry sentry createuser
 ```
 
 This will prompt you to enter an email, password and whether the user should be a superuser.
