@@ -66,7 +66,7 @@ need to set the following settings accordingly.
 
 ```
 dokku config:set --no-restart sentry SENTRY_EMAIL_HOST=smtp.example.com
-dokku config:set --no-restart sentry SENTRY_EMAIL_USERNAME=<yourusername>
+dokku config:set --no-restart sentry SENTRY_EMAIL_USER=<yourusername>
 dokku config:set --no-restart sentry SENTRY_EMAIL_PASSWORD=<yourmailpassword>
 dokku config:set --no-restart sentry SENTRY_EMAIL_PORT=25
 dokku config:set --no-restart sentry SENTRY_SERVER_EMAIL=sentry@example.com
