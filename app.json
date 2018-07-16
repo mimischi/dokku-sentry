@@ -1,7 +1,7 @@
 {
 	"name": "Sentry",
 	"description": "Sentry is a realtime event logging and aggregation platform",
-	"repository": "https://github.com/darklow/dokku-sentry",
+	"repository": "https://github.com/mimischi/dokku-sentry",
 	"website": "http://getsentry.com",
 	"keywords": [
 		"logging",
