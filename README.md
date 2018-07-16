@@ -1,6 +1,6 @@
 ![Project logo](.github/header.png)
 
-![Sentry version](https://img.shields.io/badge/Sentry-8.22-blue.svg) ![Dokku version](https://img.shields.io/badge/Dokku-v0.10.4-blue.svg)
+![Sentry version](https://img.shields.io/badge/Sentry-9.0-blue.svg) ![Dokku version](https://img.shields.io/badge/Dokku-v0.12.10-blue.svg)
 
 # Run Sentry on Dokku
 
@@ -14,8 +14,8 @@ modifications for a seamless deploy to Dokku.
 ## What you get
 
 This repository will deploy [Sentry
-8.22](https://github.com/getsentry/sentry/releases/tag/8.22.0). It has been
-tested with Dokku 0.10+.
+9.0](https://github.com/getsentry/sentry/releases/tag/9.0.0). It has been tested
+with Dokku 0.10+.
 
 ## Requirements
 
@@ -25,9 +25,25 @@ tested with Dokku 0.10+.
  * [dokku-memcached](https://github.com/dokku/dokku-memcached)
  * [dokku-letsencrypt](https://github.com/dokku/dokku-letsencrypt)
 
+# Upgrading
+
+When upgrading to a newer version, e.g. 8.22 to 9.0.0, you just need to follow
+the following steps:
+
+First get the newest version of this repository from GitHub and push it to you
+Dokku host:
+
+```bash
+git pull
+git push dokku master
+```
+
+During the deploy, Dokku will run all commands that are necessary to upgrade the
+database to the newest version. You do not need to do anything else.
+
 # Setup
 
-This will guide you through the set up of your Sentry instance. Make sure to
+This will guide you through the set up of a new Sentry instance. Make sure to
 follow these steps one after another.
 
 ## App and databases
