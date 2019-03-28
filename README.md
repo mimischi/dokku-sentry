@@ -57,14 +57,14 @@ dokku apps:create sentry
 Next we create the databases needed by Sentry and link them.
 
 ```
-dokku postgres:create sentry-postgres
-dokku postgres:link sentry-postgres sentry
+dokku postgres:create sentry_postgres
+dokku postgres:link sentry_postgres sentry
 
-dokku redis:create sentry-redis
-dokku redis:link sentry-redis sentry
+dokku redis:create sentry_redis
+dokku redis:link sentry_redis sentry
 
-dokku memcached:create sentry-memcached
-dokku memcached:link sentry-memcached sentry
+dokku memcached:create sentry_memcached
+dokku memcached:link sentry_memcached sentry
 ```
 
 ## Configuration
