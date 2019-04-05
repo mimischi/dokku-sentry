@@ -14,7 +14,7 @@ modifications for a seamless deploy to Dokku.
 ## What you get
 
 This repository will deploy [Sentry
-9.01(https://github.com/getsentry/sentry/releases/tag/9.1.0). It has been tested
+9.1](https://github.com/getsentry/sentry/releases/tag/9.1.0). It has been tested
 with Dokku 0.10+.
 
 ## Requirements
