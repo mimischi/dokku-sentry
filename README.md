@@ -1,6 +1,6 @@
 ![Project logo](.github/header.png)
 
-![Sentry version](https://img.shields.io/badge/Sentry-9.0-blue.svg) ![Dokku version](https://img.shields.io/badge/Dokku-v0.12.10-blue.svg)
+![Sentry version](https://img.shields.io/badge/Sentry-9.1-blue.svg) ![Dokku version](https://img.shields.io/badge/Dokku-v0.14.6-blue.svg)
 
 # Run Sentry on Dokku
 
@@ -14,7 +14,7 @@ modifications for a seamless deploy to Dokku.
 ## What you get
 
 This repository will deploy [Sentry
-9.0](https://github.com/getsentry/sentry/releases/tag/9.0.0). It has been tested
+9.01(https://github.com/getsentry/sentry/releases/tag/9.1.0). It has been tested
 with Dokku 0.10+.
 
 ## Requirements
@@ -27,7 +27,7 @@ with Dokku 0.10+.
 
 # Upgrading
 
-When upgrading to a newer version, e.g. 8.22 to 9.0.0, you just need to follow
+When upgrading to a newer version, e.g. 8.22 to 9.1.0, you just need to follow
 the following steps:
 
 First get the newest version of this repository from GitHub and push it to you
