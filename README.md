@@ -116,19 +116,20 @@ documentation](http://dokku.viewdocs.io/dokku/advanced-usage/proxy-management/#p
 Because we want Sentry to be available on the default port `80` (or `443` for
 SSL), we need to fiddle around with the proxy settings.
 
-First remove the proxy mapping added by Dokku.
+First add the proxy mapping that sentry uses.
+
+```
+dokku proxy:ports-add sentry http:80:9000
+```
+
+Then, remove the proxy mapping added by Dokku.
 
 ```
 dokku proxy:ports-remove sentry http:80:5000
 ```
 
-If `dokku proxy:report sentry` shows that `DOKKU_PROXY_PORT_MAP` is not empty,
-remove all remaining port mappings. Next add the correct port mapping for this
-project.
-
-```
-dokku proxy:ports-add sentry http:80:9000
-```
+If `dokku proxy:report sentry` shows more than one port mapping, 
+remove all port mappings except the added above.
 
 ## Push Sentry to Dokku
 
